@@ -192,10 +192,7 @@ $$
 Integrate over the whole domain:
 
 $$
-\int_{\Omega}
--\left[\nabla \cdot \left(\sigma_i \nabla \phi_i\right)\right]v\,d\Omega
-=
-\int_{\Omega} q_i v\,d\Omega
+\int_{\Omega}-\left[\nabla \cdot \left(\sigma_i \nabla \phi_i\right)\right]v\,d\Omega=\int_{\Omega} q_i v\,d\Omega
 $$
 
 Now apply integration by parts.
@@ -203,14 +200,7 @@ Now apply integration by parts.
 The useful identity is:
 
 $$
-\int_{\Omega}
--\nabla \cdot \mathbf{F}\, v\, d\Omega
-=
-\int_{\Omega}
-\mathbf{F}\cdot \nabla v\, d\Omega
--
-\int_{\partial \Omega}
-(\mathbf{F}\cdot \mathbf{n})v\,d\Gamma
+\int_{\Omega}-\nabla \cdot \mathbf{F}\, v\, d\Omega=\int_{\Omega}\mathbf{F}\cdot \nabla v\, d\Omega-\int_{\partial \Omega}(\mathbf{F}\cdot \mathbf{n})v\,d\Gamma
 $$
 
 Here:
@@ -222,14 +212,7 @@ $$
 So:
 
 $$
-\int_{\Omega}
--\nabla \cdot \left(\sigma_i \nabla \phi_i\right) v\,d\Omega
-=
-\int_{\Omega}
-\sigma_i \nabla \phi_i \cdot \nabla v\,d\Omega
--
-\int_{\partial \Omega}
-\left(\sigma_i \nabla \phi_i \cdot \mathbf{n}\right)v\,d\Gamma
+\int_{\Omega}-\nabla \cdot \left(\sigma_i \nabla \phi_i\right) v\,d\Omega=\int_{\Omega}\sigma_i \nabla \phi_i \cdot \nabla v\,d\Omega-\int_{\partial \Omega}\left(\sigma_i \nabla \phi_i \cdot \mathbf{n}\right)v\,d\Gamma
 $$
 
 If the remaining boundary has natural no-flux behavior, the boundary term is zero:
@@ -241,11 +224,8 @@ $$
 So the weak form becomes:
 
 $$
-\int_{\Omega}
-\sigma_i \nabla \phi_i \cdot \nabla v\,d\Omega
-=
-\int_{\Omega}
-q_i v\,d\Omega
+\int_{\Omega}\sigma_i \nabla \phi_i \cdot \nabla v\,d\Omega=\int_{\Omega}q_i v\,d\Omega
+$$
 The code defines:
 
 ```python
@@ -270,9 +250,7 @@ a = sigma_ionic * ufl.dot(ufl.grad(phi), ufl.grad(v)) * dx
 The finite-element solution is:
 
 $$
-\phi_i^h(\mathbf{x})
-=
-\sum_{k=1}^{N} \Phi_k N_k(\mathbf{x})
+\phi_i^h(\mathbf{x})=\sum_{k=1}^{N} \Phi_k N_k(\mathbf{x})
 $$
 
 Choose the test function as one basis function:
@@ -284,40 +262,25 @@ $$
 Substitute into the weak form:
 
 $$
-\int_{\Omega}
-\sigma_i
-\nabla \left(\sum_{k=1}^{N} \Phi_k N_k\right)
-\cdot \nabla N_m\,d\Omega
-=
-\int_{\Omega} q_i N_m\,d\Omega
+\int_{\Omega}\sigma_i\nabla \left(\sum_{k=1}^{N} \Phi_k N_k\right)\cdot \nabla N_m\,d\Omega=\int_{\Omega} q_i N_m\,d\Omega
 $$
 
 Move the summation outside:
 
 $$
-\sum_{k=1}^{N}
-\Phi_k
-\int_{\Omega}
-\sigma_i \nabla N_k \cdot \nabla N_m\,d\Omega
-=
-\int_{\Omega} q_i N_m\,d\Omega
+\sum_{k=1}^{N}\Phi_k\int_{\Omega}\sigma_i \nabla N_k \cdot \nabla N_m\,d\Omega=\int_{\Omega} q_i N_m\,d\Omega
 $$
 
 Define the matrix entry:
 
 $$
-A_{mk}
-=
-\int_{\Omega}
-\sigma_i \nabla N_k \cdot \nabla N_m\,d\Omega
+A_{mk}=\int_{\Omega}\sigma_i \nabla N_k \cdot \nabla N_m\,d\Omega
 $$
 
 Define the right-hand-side entry:
 
 $$
-b_m
-=
-\int_{\Omega} q_i N_m\,d\Omega
+b_m=\int_{\Omega} q_i N_m\,d\Omega
 $$
 
 Then the full system becomes:
