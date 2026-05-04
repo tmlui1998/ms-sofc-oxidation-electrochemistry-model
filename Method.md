@@ -741,3 +741,171 @@ $$
 R_{\mathrm{load,ASR}}=2.5\times10^{-4}~\Omega~\mathrm{m^2}
 $$
 
+# 16 Temperature equation
+
+The model solves temperature separately on the $\Omega_f$ fuel and $\Omega_a$ air submeshes.
+
+For the fuel side:
+
+$$
+\rho c_p\frac{\partial T_f}{\partial t}+\rho c_p\mathbf{u}_f\cdot\nabla T_f=\nabla\cdot\left(k\nabla T_f\right)+Q_f$$
+
+For the air side:
+
+$$
+\rho c_p\frac{\partial T_a}{\partial t}+\rho c_p\mathbf{u}_a\cdot\nabla T_a=\nabla\cdot\left(k\nabla T_a\right)+Q_a
+$$
+
+where:
+
+$$\rho c_p=2.5\times10^{6}\mathrm{J~m^{-3}~K^{-1}}$$ is the effective volumetric heat capacity,
+
+$$k=2.0\mathrm{Wm^{-1}K^{-1}}$$ is the effective thermal conductivity, and
+
+$$Q_f,Q_a$$ are volumetric heat sources.
+
+The temperature is clipped to:
+
+$$
+700\mathrm{K}\le T \le 1400\mathrm{K}
+$$
+
+The fuel-side heat source is:
+
+$$
+Q_f=\frac{i_{\mathrm{loc}}\left(\eta_a+0.5\eta_{\mathrm{ohmic}}\right)}{h_{\mathrm{AFL}}}
+$$
+
+The air-side heat source is approximated as:
+
+$$
+Q_a=\frac{i_{\mathrm{loc}}\eta_c}{h_{\mathrm{CFL}}}
+$$
+
+This means heat increases when current or voltage loss increases.
+
+# 17 Boundary conditions
+
+### 17.1 Fuel inlet
+
+The fuel inlet is located at $$y=L_y$$.
+
+The imposed concentration conditions are:
+
+$$
+c_{\mathrm{H_2}}=c_{\mathrm{H_2,in}}
+$$
+
+$$
+c_{\mathrm{H_2O}}=c_{\mathrm{H_2O,in}}
+$$
+
+The imposed thermal condition is:
+
+$$
+T_f=T_{\mathrm{fuel,in}}=1073.15~\mathrm{K}
+$$
+
+The imposed pressure condition is:
+
+$$
+p_f=P+120~\mathrm{Pa}
+$$
+
+### 17.2 Fuel outlet
+
+The fuel outlet is located at $$y=0$$.
+
+The pressure condition is:
+
+$$
+p_f=P
+$$
+
+For species and temperature, no Dirichlet value is imposed at the outlet. Therefore, the natural diffusive flux condition is:
+
+$$
+D_i\nabla c_i\cdot\mathbf{n}=0$$
+
+$$
+k\nabla T_f\cdot\mathbf{n}=0
+$$
+
+### 17.3 Air inlet
+
+The air inlet is located at $$y=0$$.
+
+The oxygen inlet condition is:
+
+$$
+c_{\mathrm{O_2}}=c_{\mathrm{O_2,in}}
+$$
+
+The air temperature condition is:
+
+$$
+T_a=T_{\mathrm{air,in}}=1073.15\mathrm{K}
+$$
+
+The pressure condition is:
+
+$$
+p_a=P+120~\mathrm{Pa}
+$$
+
+### 17.4 Air outlet
+
+The air outlet is located at $$y=L_y$$.
+
+The pressure condition for Darcy flow is:
+
+$$
+p_a=P
+$$
+
+For oxygen and temperature:
+
+$$
+D_{\mathrm{O_2}}\nabla c_{\mathrm{O_2}}\cdot\mathbf{n}=0
+$$
+
+$$
+k\nabla T_a\cdot\mathbf{n}=0
+$$
+
+### 17.5 Electronic and ionic potential boundaries
+
+The electronic potential boundary condition is:
+
+$$
+\phi_e=0\mathrm{V}
+$$
+
+at:
+
+$$
+z=z_{\mathrm{fuel,top}}
+$$
+
+The ionic potential boundary condition is:
+
+$$
+\phi_i=0.75\mathrm{V}
+$$
+
+at:
+
+$$
+z=z_{\mathrm{air,top}}
+$$
+
+All other potential boundaries use natural zero-flux conditions unless otherwise prescribed:
+
+$$
+\sigma_e\nabla\phi_e\cdot\mathbf{n}=0
+$$
+
+$$
+\sigma_i\nabla\phi_i\cdot\mathbf{n}=0
+$$
+
