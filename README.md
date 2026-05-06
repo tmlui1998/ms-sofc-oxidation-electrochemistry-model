@@ -1,14 +1,35 @@
-# Methodology Overview
+# The Effect of Metal Suport Degradation on the Performance of Solid Oxide Fuel Cell
 
-This model simulates a three-dimensional counter-flow metal-supported solid oxide fuel cell (MS-SOFC). The goal is to study how gas transport, electrochemical reaction, heat generation, and metal-support oxidation interact and affect cell performance.
+# Introduction
 
-## What the model represents
+This project develops a three-dimensional FEniCSx/DOLFINx model of a counter-flow MS-SOFC to study how oxidation of the porous metal support affects cell performance. The model couples gas transport, porous-media diffusion, electrochemical reaction, electric-potential transport, heat generation, and material-property degradation. The main goal is to quantify how degradation changes current density, voltage, power density, gas concentration, temperature, effective diffusivity, porosity, tortuosity, and electronic conductivity.
+
+# Model Setup
 
 The geometry represents a layered MS-SOFC with fuel and air channels, ribs, a porous metal support, an anode functional layer, electrolyte, cathode functional layer, and cathode porous layer.
 
-The fuel and air streams flow in opposite directions. Fuel enters from one end of the channel and air enters from the other end, so the model represents a counter-flow configuration.
+![Figure 1. Model Geometry](figures/Geometry.png)
 
-Although the full geometry is built and tagged, the main simulation is solved on two reduced submeshes:
+The model uses the following geometric dimensions:
+
+| Quantity | Meaning | Value |
+|---|---:|---:|
+| $$w_{\mathrm{rib}}$$ | rib width | $$200~\mu\mathrm{m}$$ |
+| $$w_{\mathrm{channel}}$$ | channel width | $$600~\mu\mathrm{m}$$ |
+| $$L_x$$ | total width | $$1000~\mu\mathrm{m}$$ |
+| $$L_y$$ | flow length | $$3000~\mu\mathrm{m}$$ |
+| $$h_{\mathrm{fuel}}$$ | fuel channel height | $$300~\mu\mathrm{m}$$ |
+| $$h_{\mathrm{MS}}$$ | metal support thickness | $$500~\mu\mathrm{m}$$ |
+| $$h_{\mathrm{AFL}}$$ | anode functional layer thickness | $$20~\mu\mathrm{m}$$ |
+| $$h_{\mathrm{EL}}$$ | electrolyte thickness | $$10~\mu\mathrm{m}$$ |
+| $$h_{\mathrm{CFL}}$$ | cathode functional layer thickness | $$30~\mu\mathrm{m}$$ |
+| $$h_{\mathrm{cathode}}$$ | cathode porous layer thickness | $$100~\mu\mathrm{m}$$ |
+| $$h_{\mathrm{air}}$$ | air channel height | $$300~\mu\mathrm{m}$$ |
+
+
+The fuel and air streams flow in opposite directions. Fuel enters from one end of the channel and air enters from the other end.
+
+The main simulation is solved on two reduced submeshes:
 
 | Submesh | Included regions | Main variables solved |
 |---|---|---|
@@ -17,7 +38,34 @@ Although the full geometry is built and tagged, the main simulation is solved on
 
 The anode functional layer and cathode functional layer are coupled by matching nearby cells in the horizontal plane. This allows the model to calculate one shared local current density for the anode and cathode reaction at each location.
 
+The operating temperature is
+
+$$
+T_0 = 1073.15~\mathrm{K}
+$$
+
+The inlet fuel gas is humidified hydrogen:
+
+$$
+x_{\mathrm{H_2,in}}=0.97
+$$
+
+$$
+x_{\mathrm{H_2O,in}}=0.03
+$$
+
+The air inlet oxygen mole fraction is:
+
+$$
+x_{\mathrm{O_2,in}}=0.21
+$$
+# Governing Equations
+
 ## Gas transport
+
+$$
+\frac{\partial c}{\partial t}+\mathbf{u}_f\cdot\nabla c=\nabla\cdot\left(D_{\mathrm{C}}\nabla c\right)+S
+$$
 
 The model tracks hydrogen and water vapor on the fuel side, and oxygen on the air side.
 
@@ -27,15 +75,27 @@ Gas transport includes both advection and diffusion. Advection moves species wit
 
 ## Porous-media transport
 
+$$
+D_{\mathrm{eff}}=D_{\mathrm{bulk}}\frac{\varepsilon}{\tau}
+$$
+
 The metal support and electrode layers are porous, so gas does not move through them as freely as it does in open channels. The model accounts for this by using effective transport properties based on porosity and tortuosity.
 
 When oxidation progresses, the metal support becomes less porous and more tortuous. This reduces the effective diffusivity of hydrogen and water vapor, which makes it harder for fuel to reach the active reaction layer.
+
+$$
+D(T)=D_{\mathrm{ref}}\left(\frac{T}{T_0}\right)^{1.75}
+$$
 
 The model can also include a Maxwell-Stefan-inspired correction and Knudsen diffusion. This improves the gas transport description by accounting for gas mixture composition, temperature, and pore size.
 
 ## Darcy flow
 
-The current configuration uses pressure-driven Darcy flow instead of directly prescribing the gas velocity everywhere.
+$$
+\nabla\cdot\left(\frac{K}{\mu}\nabla p\right)=0
+$$
+
+The model uses pressure-driven Darcy flow.
 
 Pressure is prescribed at the fuel and air inlets and outlets. The model then calculates the pressure field and uses it to compute the Darcy velocity. This velocity is used in the gas and heat transport equations.
 
@@ -71,6 +131,10 @@ First, lower electronic conductivity increases electronic conduction loss and re
 
 ## Electronic and ionic potentials
 
+$$
+-\nabla\cdot\left(\sigma\nabla\phi\right)=q
+$$
+
 The model solves an electronic potential equation on the fuel submesh. This represents electron conduction through the metal support and anode-side conducting regions.
 
 The model also solves a reduced ionic/electrolyte-side potential equation on the air submesh. This is used to represent the cathode-side/electrolyte-side potential involved in the local electrochemical reaction.
@@ -79,6 +143,10 @@ The difference between ionic and electronic potential gives the local operating 
 
 ## Electrochemical current
 
+$$
+i_{\mathrm{loc}}=2i_0\sinh\left(\frac{\alpha F\eta_{\mathrm{act}}}{RT}\right)
+$$
+
 The local current density is calculated using a Butler-Volmer-type relationship.
 
 The model first uses the local gas concentrations and temperature to calculate the local Nernst voltage. It then compares this reversible voltage with the local operating voltage from the potential fields. The difference gives the activation overpotential, which drives the local current.
@@ -86,6 +154,9 @@ The model first uses the local gas concentrations and temperature to calculate t
 The same local current is used on the anode and cathode side, so hydrogen consumption, water production, and oxygen consumption remain coupled.
 
 ## Heat generation and temperature
+
+$$
+\rho c_p\frac{\partial T}{\partial t}+\rho c_p\mathbf{u}_f\cdot\nabla T=\nabla\cdot\left(k\nabla T\right)+Q$$
 
 The model solves temperature on both the fuel and air submeshes.
 
@@ -105,47 +176,3 @@ At the air outlet, the model prescribes pressure. Oxygen and temperature use nat
 
 The electronic potential is fixed at the fuel-side collector reference. The ionic/electrolyte-side potential is fixed at the air-side collector reference.
 
-## Numerical method
-
-The governing equations are solved using the finite-element method in DOLFINx/FEniCSx.
-
-The code writes the weak forms in UFL and solves the resulting linear systems using PETSc. Scalar transport is used for gas species and metal fraction. Separate finite-element solves are used for pressure, temperature, electronic potential, and ionic potential.
-
-Additional projection steps are used to store velocity, electronic current density, ionic current density, and current magnitudes for visualization in ParaView.
-
-## Time-stepping sequence
-
-At each time step, the model performs the following operations:
-
-1. Update material properties from the current metal fraction.
-2. Solve Darcy pressure and compute gas velocity.
-3. Update effective gas diffusivities.
-4. Compute metal oxidation rate.
-5. Map AFL and CFL values between fuel and air submeshes.
-6. Compute local Nernst voltage, activation overpotential, and current density.
-7. Build electrochemical source terms for hydrogen, water vapor, and oxygen.
-8. Solve electronic and ionic potential fields.
-9. Solve gas species transport.
-10. Update the metal fraction.
-11. Solve temperature transport.
-12. Write output fields for visualization and diagnostics.
-
-## Main model output
-
-The model outputs spatial and time-dependent fields such as:
-
-- hydrogen concentration,
-- water-vapor concentration,
-- oxygen concentration,
-- temperature,
-- metal fraction,
-- oxidation degree,
-- electronic potential,
-- ionic potential,
-- local Nernst voltage,
-- activation overpotential,
-- local current density,
-- voltage loss indicators,
-- transport degradation indicators.
-
-The main purpose of these outputs is to show how metal-support oxidation reduces MS-SOFC performance through electronic conductivity loss and porous-transport degradation.
