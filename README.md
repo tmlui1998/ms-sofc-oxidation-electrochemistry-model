@@ -8,7 +8,7 @@ This project develops a three-dimensional FEniCSx/DOLFINx model of a counter-flo
 
 The geometry represents a layered MS-SOFC with fuel and air channels, ribs, a porous metal support, an anode functional layer, electrolyte, cathode functional layer, and cathode porous layer.
 
-![Figure 1. Model Geometry](figures/Geometry.png)
+![Figure 1. Model Geometry](figures/Cell_Tagged.png)
 
 The model uses the following geometric dimensions:
 
@@ -178,6 +178,21 @@ The electronic potential is fixed at the fuel-side collector reference. The ioni
 
 # Result
 ## Overall electrochemical performance
+Animation of current density:
+
+<div style="display: inline-flex; align-items: center;">
+  <!-- Video Thumbnail -->
+  <a href="https://youtu.be/IH8KMW2LzHc" target="_blank" style="display: inline-block;">
+    <img src="https://img.youtube.com/vi/IH8KMW2LzHc/0.jpg" style="width: 50%; display: block;">
+  </a>
+
+  <!-- Play Button -->
+  <a href="https://youtu.be/IH8KMW2LzHc" target="_blank" style="display: inline-block;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_play_button_icon_%282013%E2%80%932017%29.svg" 
+         style="width: 50px; height: auto; margin-left: 5px;">
+  </a>
+</div>
+
 Metal-support degradation has a clear effect on the simulated MS-SOFC performance. The voltage is set at 0.75V
 
 | `theta_metal` [-] | Current density [A m⁻²] | Voltage [V] | Power density [W m⁻²] | Power loss vs fresh [%] |
@@ -197,6 +212,20 @@ Metal-support degradation has a clear effect on the simulated MS-SOFC performanc
 As theta_metal decreases, the current density and power density also decrease, which means that the cell becomes less capable of producing useful electrical output. The voltage remains relatively stable between theta_metal = 1.0 and theta_metal = 0.2, but it drops strongly at theta_metal = 0.1 and becomes negative at theta_metal = 0.0. Therefore, the main physical trend is reliable up to approximately theta_metal = 0.1, while the fully degraded case represents a failure condition. Between theta_metal = 1.0 and theta_metal = 0.3, the mean voltage slightly increases from 0.7080 V to 0.7140 V, even though the support is degrading. Tt happens because the current density decreases, and lower current density can reduce some current-dependent voltage losses.
 
 ## Gas concentration
+Animation of the gas concentration:
+
+<div style="display: inline-flex; align-items: center;">
+  <!-- Video Thumbnail -->
+  <a href="https://youtu.be/PrG6pOMaUZo" target="_blank" style="display: inline-block;">
+    <img src="https://img.youtube.com/vi/PrG6pOMaUZo/0.jpg" style="width: 50%; display: block;">
+  </a>
+
+  <!-- Play Button -->
+  <a href="https://youtu.be/PrG6pOMaUZo" target="_blank" style="display: inline-block;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_play_button_icon_%282013%E2%80%932017%29.svg" 
+         style="width: 50px; height: auto; margin-left: 5px;">
+  </a>
+</div>
 
 Hydrogen is the fuel-side reactant, steam is the fuel-side product, and oxygen is the air-side reactant.
 
@@ -238,6 +267,20 @@ The electron loss is especially important because it directly reflects the loss 
 
 
 ## Thermal behavior
+Animation of the temperature:
+
+<div style="display: inline-flex; align-items: center;">
+  <!-- Video Thumbnail -->
+  <a href="https://youtu.be/7q31o7YekOE" target="_blank" style="display: inline-block;">
+    <img src="https://img.youtube.com/vi/7q31o7YekOE/0.jpg" style="width: 50%; display: block;">
+  </a>
+
+  <!-- Play Button -->
+  <a href="7q31o7YekOE" target="_blank" style="display: inline-block;">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_play_button_icon_%282013%E2%80%932017%29.svg" 
+         style="width: 50px; height: auto; margin-left: 5px;">
+  </a>
+</div>
 
 Heat generation is related to electrochemical activity and resistive losses, while the temperature rise indicates the resulting thermal response of the fuel and air regions.
 
